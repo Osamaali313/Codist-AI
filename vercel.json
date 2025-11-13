@@ -4,20 +4,6 @@
   "installCommand": "npm install",
   "framework": null,
   "outputDirectory": "build/client",
-  "env": {
-    "NODE_VERSION": "18"
-  },
-  "build": {
-    "env": {
-      "NODE_ENV": "production"
-    }
-  },
-  "functions": {
-    "app/**": {
-      "runtime": "nodejs18.x",
-      "maxDuration": 30
-    }
-  },
   "rewrites": [
     {
       "source": "/(.*)",
