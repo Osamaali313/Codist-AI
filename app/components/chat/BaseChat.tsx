@@ -33,6 +33,7 @@ import { ChatBox } from './ChatBox';
 import type { DesignScheme } from '~/types/design-scheme';
 import type { ElementInfo } from '~/components/workbench/Inspector';
 import LlmErrorAlert from './LLMApiAlert';
+import { AgentStatusPanel } from './AgentStatusPanel';
 
 const TEXTAREA_MIN_HEIGHT = 76;
 
@@ -495,6 +496,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
             )}
           </ClientOnly>
         </div>
+        <ClientOnly>{() => <AgentStatusPanel />}</ClientOnly>
       </div>
     );
 
