@@ -19,7 +19,7 @@ export async function openDatabase(): Promise<IDBDatabase | undefined> {
   }
 
   return new Promise((resolve) => {
-    const request = indexedDB.open('boltHistory', 2);
+    const request = indexedDB.open('boltHistory', 3);
 
     request.onupgradeneeded = (event: IDBVersionChangeEvent) => {
       const db = (event.target as IDBOpenDBRequest).result;
@@ -36,6 +36,37 @@ export async function openDatabase(): Promise<IDBDatabase | undefined> {
       if (oldVersion < 2) {
         if (!db.objectStoreNames.contains('snapshots')) {
           db.createObjectStore('snapshots', { keyPath: 'chatId' });
+        }
+      }
+
+      // Version 3: Add agent-related stores
+      if (oldVersion < 3) {
+        // Agent conversations - stores inter-agent communication
+        if (!db.objectStoreNames.contains('agentConversations')) {
+          const agentConvStore = db.createObjectStore('agentConversations', { keyPath: 'id' });
+          agentConvStore.createIndex('projectId', 'projectId', { unique: false });
+          agentConvStore.createIndex('chatId', 'chatId', { unique: false });
+        }
+
+        // Agent decisions - stores key decisions made by agents
+        if (!db.objectStoreNames.contains('agentDecisions')) {
+          const decisionStore = db.createObjectStore('agentDecisions', { keyPath: 'id' });
+          decisionStore.createIndex('agentType', 'agentType', { unique: false });
+          decisionStore.createIndex('projectId', 'projectId', { unique: false });
+        }
+
+        // Project context - stores project-level context
+        if (!db.objectStoreNames.contains('projectContext')) {
+          const contextStore = db.createObjectStore('projectContext', { keyPath: 'id' });
+          contextStore.createIndex('chatId', 'chatId', { unique: true });
+        }
+
+        // Agent handoffs - stores handoffs between agents
+        if (!db.objectStoreNames.contains('agentHandoffs')) {
+          const handoffStore = db.createObjectStore('agentHandoffs', { keyPath: 'id' });
+          handoffStore.createIndex('projectId', 'projectId', { unique: false });
+          handoffStore.createIndex('from', 'from', { unique: false });
+          handoffStore.createIndex('to', 'to', { unique: false });
         }
       }
     };
@@ -339,5 +370,125 @@ export async function deleteSnapshot(db: IDBDatabase, chatId: string): Promise<v
         reject(request.error);
       }
     };
+  });
+}
+
+/**
+ * Agent-related database functions
+ */
+
+export async function saveAgentConversation(
+  db: IDBDatabase,
+  conversation: any,
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction('agentConversations', 'readwrite');
+    const store = transaction.objectStore('agentConversations');
+    const request = store.put(conversation);
+
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+}
+
+export async function getAgentConversations(
+  db: IDBDatabase,
+  projectId: string,
+): Promise<any[]> {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction('agentConversations', 'readonly');
+    const store = transaction.objectStore('agentConversations');
+    const index = store.index('projectId');
+    const request = index.getAll(projectId);
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+export async function saveAgentDecision(
+  db: IDBDatabase,
+  decision: any,
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction('agentDecisions', 'readwrite');
+    const store = transaction.objectStore('agentDecisions');
+    const request = store.put(decision);
+
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+}
+
+export async function getAgentDecisions(
+  db: IDBDatabase,
+  projectId: string,
+): Promise<any[]> {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction('agentDecisions', 'readonly');
+    const store = transaction.objectStore('agentDecisions');
+    const index = store.index('projectId');
+    const request = index.getAll(projectId);
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+export async function saveProjectContext(
+  db: IDBDatabase,
+  context: any,
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction('projectContext', 'readwrite');
+    const store = transaction.objectStore('projectContext');
+    const request = store.put(context);
+
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+}
+
+export async function getProjectContext(
+  db: IDBDatabase,
+  chatId: string,
+): Promise<any | undefined> {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction('projectContext', 'readonly');
+    const store = transaction.objectStore('projectContext');
+    const index = store.index('chatId');
+    const request = index.get(chatId);
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+export async function saveAgentHandoff(
+  db: IDBDatabase,
+  handoff: any,
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction('agentHandoffs', 'readwrite');
+    const store = transaction.objectStore('agentHandoffs');
+    const request = store.put(handoff);
+
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+}
+
+export async function getAgentHandoffs(
+  db: IDBDatabase,
+  projectId: string,
+): Promise<any[]> {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction('agentHandoffs', 'readonly');
+    const store = transaction.objectStore('agentHandoffs');
+    const index = store.index('projectId');
+    const request = index.getAll(projectId);
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
   });
 }
