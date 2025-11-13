@@ -34,6 +34,7 @@ import type { DesignScheme } from '~/types/design-scheme';
 import type { ElementInfo } from '~/components/workbench/Inspector';
 import LlmErrorAlert from './LLMApiAlert';
 import { AgentStatusPanel } from './AgentStatusPanel';
+import { ProjectDashboard } from './ProjectDashboard';
 
 const TEXTAREA_MIN_HEIGHT = 76;
 
@@ -350,13 +351,45 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
         <div className="flex flex-col lg:flex-row overflow-y-auto w-full h-full">
           <div className={classNames(styles.Chat, 'flex flex-col flex-grow lg:min-w-[var(--chat-min-width)] h-full')}>
             {!chatStarted && (
-              <div id="intro" className="mt-[16vh] max-w-2xl mx-auto text-center px-4 lg:px-0">
-                <h1 className="text-3xl lg:text-6xl font-bold text-bolt-elements-textPrimary mb-4 animate-fade-in">
-                  Where ideas begin
+              <div id="intro" className="mt-[16vh] max-w-3xl mx-auto text-center px-4 lg:px-0">
+                {/* Premium Codist AI Intro */}
+                <div className="flex justify-center mb-6 animate-fade-in">
+                  <div className="relative">
+                    <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-2xl">
+                      <span className="text-white text-4xl font-bold">C</span>
+                    </div>
+                    <div className="absolute -top-2 -right-2 h-6 w-6 bg-green-500 rounded-full border-4 border-bolt-elements-background-depth-1 animate-pulse" />
+                  </div>
+                </div>
+
+                <h1 className="text-4xl lg:text-7xl font-bold text-bolt-elements-textPrimary mb-4 animate-fade-in">
+                  <span className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                    Codist AI
+                  </span>
                 </h1>
-                <p className="text-md lg:text-xl mb-8 text-bolt-elements-textSecondary animate-fade-in animation-delay-200">
-                  Bring ideas to life in seconds or get help on existing projects.
+
+                <p className="text-xl lg:text-2xl font-semibold text-bolt-elements-textPrimary mb-3 animate-fade-in animation-delay-200">
+                  Your Digital Co-Founder
                 </p>
+
+                <p className="text-md lg:text-lg text-bolt-elements-textSecondary mb-8 animate-fade-in animation-delay-300 max-w-2xl mx-auto">
+                  Powered by 7 specialized AI agents working together to build production-ready applications with strategic insights. From idea to deployment, your complete development team.
+                </p>
+
+                <div className="flex flex-wrap justify-center gap-3 text-sm animate-fade-in animation-delay-400">
+                  <div className="flex items-center gap-2 bg-blue-500/10 text-blue-500 px-4 py-2 rounded-full">
+                    <span>🎯</span>
+                    <span>Smart Planning</span>
+                  </div>
+                  <div className="flex items-center gap-2 bg-purple-500/10 text-purple-500 px-4 py-2 rounded-full">
+                    <span>🤖</span>
+                    <span>Multi-Agent Team</span>
+                  </div>
+                  <div className="flex items-center gap-2 bg-pink-500/10 text-pink-500 px-4 py-2 rounded-full">
+                    <span>🚀</span>
+                    <span>Deploy Ready</span>
+                  </div>
+                </div>
               </div>
             )}
             <StickToBottom
@@ -496,7 +529,14 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
             )}
           </ClientOnly>
         </div>
-        <ClientOnly>{() => <AgentStatusPanel />}</ClientOnly>
+        <ClientOnly>
+          {() => (
+            <>
+              <AgentStatusPanel />
+              <ProjectDashboard />
+            </>
+          )}
+        </ClientOnly>
       </div>
     );
 
