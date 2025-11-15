@@ -4,3 +4,6 @@ compatibility_flags = ["nodejs_compat"]
 compatibility_date = "2024-09-23"
 pages_build_output_dir = "./build/client"
 send_metrics = false
+
+# Deployment configuration for Cloudflare Pages
+# This ensures Node.js built-in modules work correctly
