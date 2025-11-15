@@ -211,7 +211,7 @@ export const AGENT_IDENTITIES: Record<AgentType, AgentIdentity> = {
     role: 'Backend Engineer',
     personality: 'pragmatic, security-conscious, performance-oriented',
   },
-  'devops': {
+  devops: {
     type: 'devops',
     name: 'Casey DevOps',
     emoji: '🚀',
@@ -219,7 +219,7 @@ export const AGENT_IDENTITIES: Record<AgentType, AgentIdentity> = {
     role: 'DevOps Engineer',
     personality: 'automation-focused, reliability-expert, efficient',
   },
-  'qa': {
+  qa: {
     type: 'qa',
     name: 'Morgan QA',
     emoji: '✅',

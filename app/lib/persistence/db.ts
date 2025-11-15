@@ -377,10 +377,7 @@ export async function deleteSnapshot(db: IDBDatabase, chatId: string): Promise<v
  * Agent-related database functions
  */
 
-export async function saveAgentConversation(
-  db: IDBDatabase,
-  conversation: any,
-): Promise<void> {
+export async function saveAgentConversation(db: IDBDatabase, conversation: any): Promise<void> {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction('agentConversations', 'readwrite');
     const store = transaction.objectStore('agentConversations');
@@ -391,10 +388,7 @@ export async function saveAgentConversation(
   });
 }
 
-export async function getAgentConversations(
-  db: IDBDatabase,
-  projectId: string,
-): Promise<any[]> {
+export async function getAgentConversations(db: IDBDatabase, projectId: string): Promise<any[]> {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction('agentConversations', 'readonly');
     const store = transaction.objectStore('agentConversations');
@@ -406,10 +400,7 @@ export async function getAgentConversations(
   });
 }
 
-export async function saveAgentDecision(
-  db: IDBDatabase,
-  decision: any,
-): Promise<void> {
+export async function saveAgentDecision(db: IDBDatabase, decision: any): Promise<void> {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction('agentDecisions', 'readwrite');
     const store = transaction.objectStore('agentDecisions');
@@ -420,10 +411,7 @@ export async function saveAgentDecision(
   });
 }
 
-export async function getAgentDecisions(
-  db: IDBDatabase,
-  projectId: string,
-): Promise<any[]> {
+export async function getAgentDecisions(db: IDBDatabase, projectId: string): Promise<any[]> {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction('agentDecisions', 'readonly');
     const store = transaction.objectStore('agentDecisions');
@@ -435,10 +423,7 @@ export async function getAgentDecisions(
   });
 }
 
-export async function saveProjectContext(
-  db: IDBDatabase,
-  context: any,
-): Promise<void> {
+export async function saveProjectContext(db: IDBDatabase, context: any): Promise<void> {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction('projectContext', 'readwrite');
     const store = transaction.objectStore('projectContext');
@@ -449,10 +434,7 @@ export async function saveProjectContext(
   });
 }
 
-export async function getProjectContext(
-  db: IDBDatabase,
-  chatId: string,
-): Promise<any | undefined> {
+export async function getProjectContext(db: IDBDatabase, chatId: string): Promise<any | undefined> {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction('projectContext', 'readonly');
     const store = transaction.objectStore('projectContext');
@@ -464,10 +446,7 @@ export async function getProjectContext(
   });
 }
 
-export async function saveAgentHandoff(
-  db: IDBDatabase,
-  handoff: any,
-): Promise<void> {
+export async function saveAgentHandoff(db: IDBDatabase, handoff: any): Promise<void> {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction('agentHandoffs', 'readwrite');
     const store = transaction.objectStore('agentHandoffs');
@@ -478,10 +457,7 @@ export async function saveAgentHandoff(
   });
 }
 
-export async function getAgentHandoffs(
-  db: IDBDatabase,
-  projectId: string,
-): Promise<any[]> {
+export async function getAgentHandoffs(db: IDBDatabase, projectId: string): Promise<any[]> {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction('agentHandoffs', 'readonly');
     const store = transaction.objectStore('agentHandoffs');

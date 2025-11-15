@@ -96,9 +96,7 @@ const AgentCard = memo(({ agent }: AgentCardProps) => {
 
           <p className="text-xs text-bolt-elements-textSecondary mt-1">{identity.role}</p>
 
-          {agent.message && (
-            <p className="text-xs text-bolt-elements-textSecondary mt-2 italic">{agent.message}</p>
-          )}
+          {agent.message && <p className="text-xs text-bolt-elements-textSecondary mt-2 italic">{agent.message}</p>}
 
           {/* Progress Bar */}
           {agent.progress > 0 && (

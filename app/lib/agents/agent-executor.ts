@@ -1,10 +1,9 @@
 import { streamText as _streamText } from 'ai';
-import type { AgentType, ProjectContext, AgentTask } from '~/types/agents';
+import type { AgentType, ProjectContext } from '~/types/agents';
 import { getAgentPrompt } from '~/lib/common/prompts/agent-prompts';
 import { messageBus } from './message-bus';
 import { orchestrator } from './orchestrator';
 import { createScopedLogger } from '~/utils/logger';
-import type { StreamingOptions } from '~/lib/.server/llm/stream-text';
 import { LLMManager } from '~/lib/modules/llm/manager';
 import type { IProviderSetting } from '~/types/model';
 
@@ -94,11 +93,18 @@ export class AgentExecutor {
       const selectedModel = model || 'claude-3-5-sonnet-20241022';
       const selectedProvider = provider || 'Anthropic';
 
-      const modelInstance = llmManager.getModel(selectedProvider, selectedModel, apiKeys, providerSettings);
+      const providerInstance = llmManager.getProvider(selectedProvider);
 
-      if (!modelInstance) {
-        throw new Error(`Model not found: ${selectedProvider}/${selectedModel}`);
+      if (!providerInstance) {
+        throw new Error(`Provider not found: ${selectedProvider}`);
       }
+
+      const modelInstance = providerInstance.getModelInstance({
+        model: selectedModel,
+        serverEnv: env,
+        apiKeys,
+        providerSettings,
+      });
 
       const result = await _streamText({
         model: modelInstance,
@@ -113,7 +119,7 @@ export class AgentExecutor {
         onChunk?.(chunk);
 
         // Update progress based on response length
-        const progress = Math.min(30 + (fullResponse.length / 100), 90);
+        const progress = Math.min(30 + fullResponse.length / 100, 90);
         orchestrator.updateAgentState(agentType, {
           progress,
         });
@@ -323,7 +329,12 @@ export class AgentExecutor {
 
     for (const line of lines) {
       if (line.match(/^\d+\.\s+/) || line.match(/^-\s+/)) {
-        tasks.push(line.replace(/^\d+\.\s+/, '').replace(/^-\s+/, '').trim());
+        tasks.push(
+          line
+            .replace(/^\d+\.\s+/, '')
+            .replace(/^-\s+/, '')
+            .trim(),
+        );
       }
     }
 

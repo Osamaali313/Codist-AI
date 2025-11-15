@@ -62,8 +62,18 @@ export class AgentWorkflow {
     this.isRunning = true;
     this.aborted = false;
 
-    const { userRequest, chatId, env, apiKeys, providerSettings, model, provider, onAgentResponse, onPhaseComplete, onComplete } =
-      params;
+    const {
+      userRequest,
+      chatId,
+      env,
+      apiKeys,
+      providerSettings,
+      model,
+      provider,
+      onAgentResponse,
+      onPhaseComplete,
+      onComplete,
+    } = params;
 
     logger.info(`Starting agent workflow for chat: ${chatId}`);
 
@@ -91,7 +101,10 @@ export class AgentWorkflow {
         onAgentResponse,
       });
 
-      if (this.aborted) return;
+      if (this.aborted) {
+        return;
+      }
+
       onPhaseComplete?.('planning');
 
       // Phase 2: Development (Parallel)
@@ -105,7 +118,10 @@ export class AgentWorkflow {
         onAgentResponse,
       });
 
-      if (this.aborted) return;
+      if (this.aborted) {
+        return;
+      }
+
       onPhaseComplete?.('development');
 
       // Phase 3: Quality Assurance
@@ -119,7 +135,10 @@ export class AgentWorkflow {
         onAgentResponse,
       });
 
-      if (this.aborted) return;
+      if (this.aborted) {
+        return;
+      }
+
       onPhaseComplete?.('quality');
 
       // Phase 4: Strategic Recommendations
@@ -133,7 +152,10 @@ export class AgentWorkflow {
         onAgentResponse,
       });
 
-      if (this.aborted) return;
+      if (this.aborted) {
+        return;
+      }
+
       onPhaseComplete?.('strategy');
 
       logger.info('Agent workflow completed successfully');
@@ -197,7 +219,9 @@ export class AgentWorkflow {
       data: { prd: pmResponse },
     });
 
-    if (this.aborted) return;
+    if (this.aborted) {
+      return;
+    }
 
     // Step 2: Requirement Analyst (up to 3 rounds of clarification)
     updateAgentState('requirement-analyst', { isActive: true, status: 'thinking', progress: 0 });

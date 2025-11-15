@@ -10,9 +10,9 @@ import {
   ctoRecommendationsStore,
   showAgentDashboardStore,
 } from '~/lib/stores/agents';
-import { AGENT_IDENTITIES, type AgentType } from '~/types/agents';
+import { AGENT_IDENTITIES, type AgentType, type AgentHandoff, type AgentTask } from '~/types/agents';
 import { memo, useState } from 'react';
-import { IconButton } from '../ui/IconButton';
+import { IconButton } from '~/components/ui/IconButton';
 
 /**
  * Project Dashboard - Comprehensive view of agent activities
@@ -88,9 +88,7 @@ export const ProjectDashboard = memo(() => {
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-4">
         <AnimatePresence mode="wait">
-          {activeTab === 'timeline' && (
-            <TimelineView key="timeline" handoffs={handoffs} agentStates={agentStates} />
-          )}
+          {activeTab === 'timeline' && <TimelineView key="timeline" handoffs={handoffs} agentStates={agentStates} />}
           {activeTab === 'tasks' && <TasksView key="tasks" tasks={Object.values(tasks)} />}
           {activeTab === 'insights' && (
             <InsightsView key="insights" qaReport={qaReport} recommendations={ctoRecommendations} />
@@ -173,64 +171,62 @@ const TabButton = memo(
 /**
  * Timeline View - Shows agent handoffs and activities
  */
-const TimelineView = memo(
-  ({ handoffs, agentStates }: { handoffs: any[]; agentStates: Record<AgentType, any> }) => {
-    return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
-        <h3 className="text-sm font-semibold text-bolt-elements-textPrimary mb-4">Agent Activity Timeline</h3>
+const TimelineView = memo(({ handoffs, agentStates: _agentStates }: { handoffs: any[]; agentStates: Record<AgentType, any> }) => {
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
+      <h3 className="text-sm font-semibold text-bolt-elements-textPrimary mb-4">Agent Activity Timeline</h3>
 
-        {handoffs.length === 0 ? (
-          <div className="text-center py-8 text-bolt-elements-textSecondary">
-            <div className="i-ph:timeline text-4xl mb-2 opacity-50" />
-            <p className="text-sm">No activity yet</p>
-          </div>
-        ) : (
-          <div className="relative">
-            {/* Timeline line */}
-            <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-bolt-elements-borderColor" />
+      {handoffs.length === 0 ? (
+        <div className="text-center py-8 text-bolt-elements-textSecondary">
+          <div className="i-ph:timeline text-4xl mb-2 opacity-50" />
+          <p className="text-sm">No activity yet</p>
+        </div>
+      ) : (
+        <div className="relative">
+          {/* Timeline line */}
+          <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-bolt-elements-borderColor" />
 
-            {/* Handoff items */}
-            {handoffs.map((handoff, index) => {
-              const fromIdentity = AGENT_IDENTITIES[handoff.from];
-              const toIdentity = AGENT_IDENTITIES[handoff.to];
+          {/* Handoff items */}
+          {handoffs.map((handoff: AgentHandoff, index) => {
+            const fromIdentity = AGENT_IDENTITIES[handoff.from];
+            const toIdentity = AGENT_IDENTITIES[handoff.to];
 
-              return (
-                <motion.div
-                  key={handoff.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="relative pl-12 pb-6"
-                >
-                  {/* Timeline dot */}
-                  <div
-                    className="absolute left-3 top-2 h-3 w-3 rounded-full border-2 border-bolt-elements-background-depth-2"
-                    style={{ backgroundColor: fromIdentity.color }}
-                  />
+            return (
+              <motion.div
+                key={handoff.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="relative pl-12 pb-6"
+              >
+                {/* Timeline dot */}
+                <div
+                  className="absolute left-3 top-2 h-3 w-3 rounded-full border-2 border-bolt-elements-background-depth-2"
+                  style={{ backgroundColor: fromIdentity.color }}
+                />
 
-                  <div className="bg-bolt-elements-background-depth-1 rounded-lg p-3 border border-bolt-elements-borderColor hover:border-bolt-elements-borderColorActive transition-all">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-lg">{fromIdentity.emoji}</span>
-                      <div className="i-ph:arrow-right text-xs text-bolt-elements-textSecondary" />
-                      <span className="text-lg">{toIdentity.emoji}</span>
-                      <span className="text-xs text-bolt-elements-textSecondary ml-auto">
-                        {new Date(handoff.timestamp).toLocaleTimeString()}
-                      </span>
-                    </div>
-                    <p className="text-sm text-bolt-elements-textPrimary font-medium">
-                      {fromIdentity.name} → {toIdentity.name}
-                    </p>
-                    <p className="text-xs text-bolt-elements-textSecondary mt-1">{handoff.context}</p>
+                <div className="bg-bolt-elements-background-depth-1 rounded-lg p-3 border border-bolt-elements-borderColor hover:border-bolt-elements-borderColorActive transition-all">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-lg">{fromIdentity.emoji}</span>
+                    <div className="i-ph:arrow-right text-xs text-bolt-elements-textSecondary" />
+                    <span className="text-lg">{toIdentity.emoji}</span>
+                    <span className="text-xs text-bolt-elements-textSecondary ml-auto">
+                      {new Date(handoff.timestamp).toLocaleTimeString()}
+                    </span>
                   </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        )}
-      </motion.div>
-    );
-  },
-);
+                  <p className="text-sm text-bolt-elements-textPrimary font-medium">
+                    {fromIdentity.name} → {toIdentity.name}
+                  </p>
+                  <p className="text-xs text-bolt-elements-textSecondary mt-1">{handoff.context}</p>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
+    </motion.div>
+  );
+});
 
 /**
  * Tasks View - Shows all tasks and their status
@@ -283,7 +279,7 @@ const TasksView = memo(({ tasks }: { tasks: any[] }) => {
 /**
  * Task Card
  */
-const TaskCard = memo(({ task }: { task: any }) => {
+const TaskCard = memo(({ task }: { task: AgentTask }) => {
   const identity = AGENT_IDENTITIES[task.assignedTo];
 
   return (
@@ -301,7 +297,9 @@ const TaskCard = memo(({ task }: { task: any }) => {
         <div className="flex-1">
           <p
             className={`text-sm ${
-              task.status === 'completed' ? 'line-through text-bolt-elements-textSecondary' : 'text-bolt-elements-textPrimary'
+              task.status === 'completed'
+                ? 'line-through text-bolt-elements-textSecondary'
+                : 'text-bolt-elements-textPrimary'
             }`}
           >
             {task.title}

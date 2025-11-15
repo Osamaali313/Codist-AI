@@ -116,6 +116,7 @@ export class AgentOrchestrator {
 
     // Step 1: Project Manager creates PRD
     await this.activateAgent('project-manager');
+
     const pmComplete = await this.waitForMessage('pm:prd-created');
 
     if (pmComplete && this.projectContext) {
@@ -127,6 +128,7 @@ export class AgentOrchestrator {
 
     // Step 2: Requirement Analyst gathers requirements
     await this.activateAgent('requirement-analyst');
+
     const raComplete = await this.waitForMessage('ra:requirements-complete');
 
     if (raComplete && this.projectContext) {
@@ -178,6 +180,7 @@ export class AgentOrchestrator {
     logger.info('Starting Quality Phase');
 
     await this.activateAgent('qa');
+
     const qaReport = await this.waitForMessage('qa:report-ready');
 
     if (qaReport) {
@@ -200,6 +203,7 @@ export class AgentOrchestrator {
     logger.info('Starting Strategy Phase');
 
     await this.activateAgent('digi-cto');
+
     const ctoAnalysis = await this.waitForMessage('cto:analysis-complete');
 
     if (ctoAnalysis) {
@@ -277,14 +281,18 @@ export class AgentOrchestrator {
     this.tasks.set(taskId, fullTask);
 
     // Notify via message bus
-    messageBus.publish('pm:task-assigned', {
-      taskId,
-      assignedTo: task.assignedTo,
-      description: task.description,
-    }, {
-      from: 'project-manager',
-      to: task.assignedTo,
-    });
+    messageBus.publish(
+      'pm:task-assigned',
+      {
+        taskId,
+        assignedTo: task.assignedTo,
+        description: task.description,
+      },
+      {
+        from: 'project-manager',
+        to: task.assignedTo,
+      },
+    );
 
     this.onTaskUpdate?.(fullTask);
 

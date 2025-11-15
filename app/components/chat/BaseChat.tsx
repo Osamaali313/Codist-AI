@@ -373,7 +373,8 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                 </p>
 
                 <p className="text-md lg:text-lg text-bolt-elements-textSecondary mb-8 animate-fade-in animation-delay-300 max-w-2xl mx-auto">
-                  Powered by 7 specialized AI agents working together to build production-ready applications with strategic insights. From idea to deployment, your complete development team.
+                  Powered by 7 specialized AI agents working together to build production-ready applications with
+                  strategic insights. From idea to deployment, your complete development team.
                 </p>
 
                 <div className="flex flex-wrap justify-center gap-3 text-sm animate-fade-in animation-delay-400">
